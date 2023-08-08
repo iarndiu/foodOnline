@@ -1,3 +1,4 @@
+from django.db.utils import IntegrityError
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import Vendor
 from .forms import VendorForm
@@ -29,9 +30,6 @@ def v_profile(request):
         vendor_form = VendorForm(request.POST, request.FILES, instance=vendor)
         if profile_form.is_valid() and vendor_form.is_valid():
             profile_form.save()
-            # vendor = vendor_form.save(commit=False)
-            # vendor_name = vendor_form.cleaned_data['vendor_name']
-            # vendor.vendor_slug = slugify(vendor_name)+'-'+str(user.id)
             vendor_form.save()
             messages.success(request, 'Settings updated.')
             return redirect('v_profile')
@@ -82,16 +80,19 @@ def fooditems_by_category(request, pk=None):
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
-        if form.is_valid():
-            category = form.save(commit=False)
-            category.vendor = get_vendor(request)
-            category_name = form.cleaned_data['category_name']
-            category.slug = slugify(category_name)+'-'+str(category.vendor.pk)
-            form.save()
-            messages.success(request, 'Category added successfully!')
-            return redirect('menu_builder')
-        else:
-            print(form.errors)
+        try:
+            if form.is_valid():
+                category = form.save(commit=False)
+                category.vendor = get_vendor(request)
+                category_name = form.cleaned_data['category_name']
+                category.slug = slugify(category_name)+'-'+str(category.vendor.pk)
+                form.save()
+                messages.success(request, 'Category added successfully!')
+                return redirect('menu_builder')
+            else:
+                print(form.errors)
+        except IntegrityError:  # duplicate key value violates unique constraint "menu_fooditem_slug_key"
+            messages.error(request, 'Category with this name already exists.')
     else:
         form = CategoryForm()
     context = {
@@ -104,18 +105,21 @@ def add_category(request):
 @user_passes_test(check_role_vendor)
 def edit_category(request, pk=None):
     category = get_object_or_404(Category, pk=pk)
-    if request.method == 'POST':
-        form = CategoryForm(request.POST, instance=category)
-        if form.is_valid():
-            category = form.save(commit=False)
-            category.vendor = get_vendor(request)
-            category_name = form.cleaned_data['category_name']
-            category.slug = slugify(category_name)+'-'+str(category.vendor.pk)
-            form.save()
-            messages.success(request, 'Category updated successfully!')
-            return redirect('menu_builder')
-        else:
-            print(form.errors)
+    try:
+        if request.method == 'POST':
+            form = CategoryForm(request.POST, instance=category)
+            if form.is_valid():
+                category = form.save(commit=False)
+                category.vendor = get_vendor(request)
+                category_name = form.cleaned_data['category_name']
+                category.slug = slugify(category_name)+'-'+str(category.vendor.pk)
+                form.save()
+                messages.success(request, 'Category updated successfully!')
+                return redirect('menu_builder')
+            else:
+                print(form.errors)
+    except IntegrityError:  # duplicate key value violates unique constraint
+        messages.error(request, 'Category with this name already exists.')
     else:
         form = CategoryForm(instance=category)
     context = {
@@ -139,16 +143,19 @@ def delete_category(request, pk=None):
 def add_food(request):
     if request.method == 'POST':
         form = FoodItemForm(request.POST, request.FILES)
-        if form.is_valid():
-            food = form.save(commit=False)
-            food.vendor = get_vendor(request)
-            food_title = form.cleaned_data['food_title']
-            food.slug = slugify(food_title)+'-'+str(food.vendor.pk)
-            form.save()
-            messages.success(request, 'Food Item added successfully!')
-            return redirect('fooditems_by_category', food.category.pk)
-        else:
-            print(form.errors)
+        try:
+            if form.is_valid():
+                food = form.save(commit=False)
+                food.vendor = get_vendor(request)
+                food_title = form.cleaned_data['food_title']
+                food.slug = slugify(food_title)+'-'+str(food.vendor.pk)
+                form.save()
+                messages.success(request, 'Food Item added successfully!')
+                return redirect('fooditems_by_category', food.category.pk)
+            else:
+                print(form.errors)
+        except IntegrityError:  # duplicate key value violates unique constraint
+            messages.error(request, 'Food item with this name already exists.')
     else:
         form = FoodItemForm()
         form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
@@ -164,16 +171,19 @@ def edit_food(request, pk=None):
     food = get_object_or_404(FoodItem, pk=pk)
     if request.method == 'POST':
         form = FoodItemForm(request.POST, request.FILES, instance=food)
-        if form.is_valid():
-            food = form.save(commit=False)
-            food.vendor = get_vendor(request)
-            food_title = form.cleaned_data['food_title']
-            food.slug = slugify(food_title)+'-'+str(food.vendor.pk)
-            form.save()
-            messages.success(request, 'Food Item updated successfully!')
-            return redirect('fooditems_by_category', food.category.pk)
-        else:
-            print(form.errors)
+        try:
+            if form.is_valid():
+                food = form.save(commit=False)
+                food.vendor = get_vendor(request)
+                food_title = form.cleaned_data['food_title']
+                food.slug = slugify(food_title)+'-'+str(food.vendor.pk)
+                form.save()
+                messages.success(request, 'Food Item updated successfully!')
+                return redirect('fooditems_by_category', food.category.pk)
+            else:
+                print(form.errors)
+        except IntegrityError:  # duplicate key value violates unique constraint
+            messages.error(request, 'Food item with this name already exists.')
     else:
         form = FoodItemForm(instance=food)
         form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
