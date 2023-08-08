@@ -29,6 +29,9 @@ def v_profile(request):
         vendor_form = VendorForm(request.POST, request.FILES, instance=vendor)
         if profile_form.is_valid() and vendor_form.is_valid():
             profile_form.save()
+            # vendor = vendor_form.save(commit=False)
+            # vendor_name = vendor_form.cleaned_data['vendor_name']
+            # vendor.vendor_slug = slugify(vendor_name)+'-'+str(user.id)
             vendor_form.save()
             messages.success(request, 'Settings updated.')
             return redirect('v_profile')
@@ -83,7 +86,7 @@ def add_category(request):
             category = form.save(commit=False)
             category.vendor = get_vendor(request)
             category_name = form.cleaned_data['category_name']
-            category.slug = slugify(category_name)
+            category.slug = slugify(category_name)+'-'+str(category.vendor.pk)
             form.save()
             messages.success(request, 'Category added successfully!')
             return redirect('menu_builder')
@@ -107,7 +110,7 @@ def edit_category(request, pk=None):
             category = form.save(commit=False)
             category.vendor = get_vendor(request)
             category_name = form.cleaned_data['category_name']
-            category.slug = slugify(category_name)
+            category.slug = slugify(category_name)+'-'+str(category.vendor.pk)
             form.save()
             messages.success(request, 'Category updated successfully!')
             return redirect('menu_builder')
@@ -140,7 +143,7 @@ def add_food(request):
             food = form.save(commit=False)
             food.vendor = get_vendor(request)
             food_title = form.cleaned_data['food_title']
-            food.slug = slugify(food_title)
+            food.slug = slugify(food_title)+'-'+str(food.vendor.pk)
             form.save()
             messages.success(request, 'Food Item added successfully!')
             return redirect('fooditems_by_category', food.category.pk)
@@ -165,7 +168,7 @@ def edit_food(request, pk=None):
             food = form.save(commit=False)
             food.vendor = get_vendor(request)
             food_title = form.cleaned_data['food_title']
-            food.slug = slugify(food_title)
+            food.slug = slugify(food_title)+'-'+str(food.vendor.pk)
             form.save()
             messages.success(request, 'Food Item updated successfully!')
             return redirect('fooditems_by_category', food.category.pk)

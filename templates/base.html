@@ -28,10 +28,11 @@
 
     <link rel="stylesheet" href="{% static 'css/custom.css' %}" class="css">
     <!-- google maps api -->
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_API_KEY}}&libraries=places&callback=initAutoComplete"
-        async defer></script>
+    {% if '/profile/' in request.GET %}
+    <script src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_API_KEY}}&libraries=places&callback=initAutoComplete" async defer></script>
+    {% endif %}
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{% static 'js/custom.js' %}"></script>
 
 
