@@ -31,11 +31,11 @@
     cursor: pointer;
 }
 
-/* .main-search.fancy .field-holder input[type="text"]{
+.main-search.fancy .field-holder input[type="text"] {
     color: #000000 !important;
 }
 
-table > tbody > tr > td{
+/* table > tbody > tr > td{
     border: none !important;
 }
 
