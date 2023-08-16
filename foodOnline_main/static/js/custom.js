@@ -101,7 +101,7 @@ $(document).ready(function(){
                     // subtotal, tax, grand total
                     applyCartAmounts(
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dic'],
                         response.cart_amount['total'],
                     )
                 }
@@ -149,7 +149,7 @@ $(document).ready(function(){
                     // subtotal, tax, grand total
                     applyCartAmounts(
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dic'],
                         response.cart_amount['total'],
                     )
                     if(window.location.pathname == '/cart/'){
@@ -187,7 +187,7 @@ $(document).ready(function(){
                     // subtotal, tax, grand total
                     applyCartAmounts(
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dic'],
                         response.cart_amount['total'],
                     )
                     removeCartItem(0, cart_id);
@@ -212,11 +212,19 @@ $(document).ready(function(){
     }
 
     // cart amount
-    function applyCartAmounts(subtotal, tax, total){
+    function applyCartAmounts(subtotal, tax_dic, total){
         if(window.location.pathname == '/cart/'){
             $('#subtotal').html(subtotal);
-            $('#tax').html(tax);
             $('#total').html(total);
+            for(key1 in tax_dic){
+                $('#tax_'+tax_dic[key1]['slug']).html(tax_dic[key1]['amount']);
+
+                // for(key2 in tax_dic[key1]){
+                    // console.log('#tax_'+key1)
+                    // console.log(tax_dic[key1][key2])
+                    // $('#tax_'+key1).html(tax_dic[key1][key2]);
+                // }
+            }
         }
     }
 

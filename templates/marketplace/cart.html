@@ -93,13 +93,17 @@
                                                     <span id="subtotal">{{subtotal}}</span>
                                                 </span>
                                             </li>
+                                            {% for type, values in tax_dic.items %}
+
                                             <li style="list-style-type: none;">
-                                                Tax
+                                                {{type}} <small>({{values.rate}}%)</small>
                                                 <span class="price float-right">
                                                     <span class="currency">$</span>
-                                                    <span id="tax">{{tax}}</span>
+                                                    <span id="tax_{{values.slug}}">{{values.amount}}</span>
                                                 </span>
                                             </li>
+
+                                            {% endfor %}
                                             <li style="list-style-type: none; font-weight: 600;">
                                                 TOTAL
                                                 <span class="price float-right">

@@ -28,11 +28,11 @@
                                         <div class="img-holder">
                                             <figure>
                                                 {% if vendor.user_profile.profile_picture %}
-                                                <a href="#">
+                                                <a href="{% url 'vendor_detail' vendor.vendor_slug  %}">
                                                     <img src="{{vendor.user_profile.profile_picture.url}}" class="img-list wp-post-image" alt="">
                                                 </a>
                                                 {% else %}
-                                                <a href="#">
+                                                <a href="{% url 'vendor_detail' vendor.vendor_slug  %}">
                                                     <img src="{% static 'images/default-profile.png' %}" class="img-list wp-post-image" alt="">
                                                 </a>
                                                 {% endif %}
