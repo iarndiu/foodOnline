@@ -13,8 +13,7 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name',
-                  'username', 'email', 'password']
+        fields = ['first_name', 'last_name', 'username', 'email', 'password']
 
     def clean(self):
         cleaned_data = super(UserForm, self).clean()
@@ -35,11 +34,16 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['profile_picture', 'cover_photo', 'address',
-                  'country', 'state', 'city', 'pin_code', 'latitude', 'longitude']
+        fields = ['profile_picture', 'cover_photo', 'address', 'country', 'state', 'city', 'pin_code', 'latitude', 'longitude']
 
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             if field in ['latitude', 'longitude']:
                 self.fields[field].widget.attrs['readonly'] = 'readonly'
+
+
+class UserInfoForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'phone']
