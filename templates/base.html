@@ -36,6 +36,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{% static 'js/custom.js' %}"></script>
 
+    <!-- paypal javascript sdk -->
+    <script data-sdk-integration-source="integrationbuilder_sc"
+        src="https://www.paypal.com/sdk/js?client-id={{PAYPAL_CLIENT_ID}}&components=buttons&enable-funding=paylater"></script>
+
 
     <style>
         body,

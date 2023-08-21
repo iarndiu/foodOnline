@@ -20,6 +20,7 @@ def get_cart_counter(request):
 def get_cart_amount(request):
     subtotal = 0
     total = 0
+    tax = 0
     tax_dic = {}
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user)
@@ -39,8 +40,9 @@ def get_cart_amount(request):
             'amount': tax_amount,
         }
         # tax_dic[tax_type] = {tax_slug: {str(tax_rate): tax_amount}}
+        tax += tax_amount
         total += tax_amount
 
     total += subtotal
 
-    return dict(subtotal=subtotal, total=total, tax_dic=tax_dic)
+    return dict(subtotal=subtotal, total=total, tax=tax, tax_dic=tax_dic)
