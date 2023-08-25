@@ -1,3 +1,5 @@
+import simplejson as json
+from order.models import Order, OrderedFood
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from accounts.models import User, UserProfile
@@ -30,3 +32,31 @@ def c_profile(request):
         'profile': profile,
     }
     return render(request, 'customer/c_profile.html', context)
+
+
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+        'orders_count': orders.count(),
+    }
+    return render(request, 'customer/my_orders.html', context)
+
+
+def order_detail(request, order_no):
+    try:
+        order = Order.objects.get(order_number=order_no, is_ordered=True)
+        ordered_food = OrderedFood.objects.filter(order=order)
+        subtotal = 0
+        for item in ordered_food:
+            subtotal += (item.price * item.quantity)
+        tax_data = json.loads(order.tax_data)
+        context = {
+            'order': order,
+            'ordered_food': ordered_food,
+            'subtotal': subtotal,
+            'tax_data': tax_data,
+        }
+        return render(request, 'customer/order_detail.html', context)
+    except:
+        return redirect('customer')
