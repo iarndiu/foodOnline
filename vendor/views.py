@@ -1,3 +1,4 @@
+from order.models import Order, OrderedFood
 from django.db import IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
@@ -269,3 +270,28 @@ def remove_opening_hours(request, pk):
                 'status': 'failed',
                 'message': 'Invalid request'
             })
+
+
+def order_detail(request, order_no):
+    try:
+        order = Order.objects.get(order_number=order_no, is_ordered=True)
+        ordered_food = OrderedFood.objects.filter(order=order, fooditem__vendor=get_vendor(request))
+        context = {
+            'order': order,
+            'ordered_food': ordered_food,
+            'subtotal': order.get_total_by_vendor()['subtotal'],
+            'tax_data': order.get_total_by_vendor()['tax_dict'],
+            'total': order.get_total_by_vendor()['total'],
+        }
+        return render(request, 'vendor/order_detail.html', context)
+    except:
+        return redirect('vendor')
+
+
+def my_orders(request):
+    vendor = Vendor.objects.get(user=request.user)
+    orders = Order.objects.filter(vendors__in=[vendor.pk], is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'vendor/my_orders.html', context)

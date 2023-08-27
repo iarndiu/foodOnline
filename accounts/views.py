@@ -1,3 +1,4 @@
+import datetime
 from order.models import Order
 from django.template.defaultfilters import slugify
 from django.shortcuts import redirect, render
@@ -197,8 +198,27 @@ def custDashboard(request):
 @user_passes_test(check_role_vendor)
 def vendorDashboard(request):
     vendor = Vendor.objects.get(user=request.user)
+    orders = Order.objects.filter(vendors__in=[vendor.pk], is_ordered=True).order_by('-created_at')
+    recent_orders = orders[:10]
+
+    total_revenue = 0
+    for i in orders:
+        total_revenue += i.get_total_by_vendor()['total']
+
+    cur_month_revenue = 0
+    cur_year = datetime.datetime.now().year
+    cur_month = datetime.datetime.now().month
+    cur_month_orders = orders.filter(vendors__in=[vendor.id], created_at__year=cur_year, created_at__month=cur_month)
+    for i in cur_month_orders:
+        cur_month_revenue += i.get_total_by_vendor()['total']
+
     context = {
         'vendor': vendor,
+        'orders': orders,
+        'orders_count': orders.count(),
+        'recent_orders': recent_orders,
+        'total_revenue': total_revenue,
+        'cur_month_revenue': cur_month_revenue,
     }
     return render(request, 'accounts/vendorDashboard.html', context)
 

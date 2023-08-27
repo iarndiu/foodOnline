@@ -1,13 +1,15 @@
 from accounts.utils import send_notification
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from marketplace.models import Cart
+from marketplace.models import Cart, Tax
 from marketplace.context_processors import get_cart_amount
 from .forms import OrderForm
 from .models import Payment, Order, OrderedFood
+from menu.models import FoodItem
 import simplejson as json
 from .utils import generate_order_number
 from django.contrib.auth.decorators import login_required
+from django.template.defaultfilters import slugify
 
 
 @login_required(login_url='login')
@@ -16,6 +18,35 @@ def place_order(request):
     cart_count = cart_items.count()
     if cart_count <= 0:
         return redirect('marketplace')
+
+    vendors_pks = set()
+    for i in cart_items:
+        vendors_pks.add(i.fooditem.vendor.pk)
+    vendors_pks = list(vendors_pks)
+
+    # {vendor_id: {subtotal: {tax_data}}}
+    total_data = {}
+    k = {}
+    for i in cart_items:
+        fooditem = FoodItem.objects.get(pk=i.fooditem.pk, vendor_id__in=vendors_pks)
+        v_id = fooditem.vendor.pk
+        k[v_id] = k.get(v_id, 0) + (fooditem.price * i.quantity)
+
+    # tax
+    for v_id, subtotal in k.items():
+        tax_dic = {}
+        get_tax = Tax.objects.filter(is_active=True)
+        for i in get_tax:
+            tax_type = i.tax_type
+            tax_slug = slugify(tax_type)
+            tax_rate = i.tax_rate
+            tax_amount = round(tax_rate * subtotal / 100, 2)
+            tax_dic[tax_type] = {
+                'slug': tax_slug,
+                'rate': tax_rate,
+                'amount': tax_amount,
+            }
+        total_data.update({v_id: {str(subtotal): tax_dic}})
 
     total = get_cart_amount(request)['total']
     total_tax = get_cart_amount(request)['tax']
@@ -39,8 +70,10 @@ def place_order(request):
             order.total_tax = total_tax
             order.tax_data = json.dumps(tax_data)
             order.payment_method = request.POST['payment_method']
+            order.total_data = json.dumps(total_data)
             order.save()
             order.order_number = generate_order_number(order.pk)
+            order.vendors.add(*vendors_pks)
             order.save()
             context = {
                 'order': order,
@@ -58,26 +91,6 @@ def payment(request):
     # check if the request is ajax
     if request.user.is_authenticated:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest' and request.method == 'POST':
-
-            #     try:
-            #         hour = get_object_or_404(OpeningHour, pk=pk)
-            #         hour.delete()
-            #         return JsonResponse({
-            #             'status': 'success',
-            #             'message': 'Opening hour has been deleted',
-            #             'pk': pk,
-            #         })
-            #     except:
-            #         return JsonResponse({
-            #             'status': 'failed',
-            #             'message': 'Opening hour does not exist'
-            #         })
-            # else:
-            #     return JsonResponse({
-            #         'status': 'failed',
-            #         'message': 'Invalid request'
-            #     })
-
             # store the payment details in payment model
             order_number = request.POST.get('order_number')
             transaction_id = request.POST.get('transaction_id')

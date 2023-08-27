@@ -40,6 +40,15 @@
     <script data-sdk-integration-source="integrationbuilder_sc"
         src="https://www.paypal.com/sdk/js?client-id={{PAYPAL_CLIENT_ID}}&components=buttons&enable-funding=paylater"></script>
 
+    <!-- include jquery datatable -->
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#myOrdersTable').DataTable();
+        })
+    </script>
+
 
     <style>
         body,
