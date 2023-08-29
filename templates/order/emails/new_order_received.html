@@ -1,9 +1,115 @@
-{% autoescape off %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml" lang="en">
 
-Hi {{ user.first_name }},
+<head>
+    <link rel="stylesheet" type="text/css" hs-webfonts="true" href="https://fonts.googleapis.com/css?family=Lato|Lato:i,b,bi">
+    <meta property="og:title" content="Email template">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        #email {
+            margin: auto;
+            width: 600px;
+            background-color: white;
+        }
 
-You have received a new order.
-Your order number: {{order.order_number}}
-Transaction ID: {{order.payment.transaction_id}}
+        .activate-btn {
+            font: inherit;
+            background-color: #C33332;
+            border: none;
+            padding: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 900;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+    </style>
+</head>
 
-{% endautoescape %}
+<body bgcolor="#F5F8FA" style="width: 100%; margin: auto 0; padding:0; font-family:Lato, sans-serif; font-size:16px; color:#33475B; word-break:break-word">
+
+    <div id="email">
+        <table role="presentation" width="100%">
+            <tr>
+                <td align="center" style="color: white;">
+                    <img alt="Logo" src="https://rathank.com/foodonline/logo/logo.png" width="400px" align="middle">
+                </td>
+        </table>
+
+        <table bgcolor="#EAF0F6" width="100%" role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 60px 60px;">
+            <tr>
+                <td>
+                    <h2 style="text-align: center;">You have received a new order.</h2>
+                    <p style="text-align: center;">Review your order information below.</p>
+                </td>
+            </tr>
+            <tr>
+                <td>Order Date: {{order.created_at}}</td>
+            </tr>
+            <tr>
+                <td>Order Number: {{order.order_number}}</td>
+            </tr>
+            <tr>
+                <td>Payment Method: {{order.payment_method}}</td>
+            </tr>
+            <tr>
+                <td>Transaction ID: {{order.payment}}</td>
+            </tr>
+        </table>
+
+        <!-- order items detail -->
+        <table bgcolor="#EAF0F6" width="100%" role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 60px 60px;">
+            <tbody>
+                <tr>
+                    <th>Image</th>
+                    <th>Food Item</th>
+                    <th>QTY</th>
+                    <th>Price</th>
+                </tr>
+                {% for item in ordered_food_to_vendor %}
+                <tr>
+                    <td><img src="http://{{domain}}{{item.fooditem.image.url}}" width="60" alt="Food Image"></td>
+                    <td>
+                        <p class="mb-0"><b>{{item.fooditem}}</b></p>
+                        <a class="text-muted" href="http://{{domain}}{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}"
+                            style="color: #ccc;">{{item.fooditem.vendor.vendor_name}}</a>
+                    </td>
+                    <td>&times; {{item.quantity}}</td>
+                    <td>${{item.fooditem.price}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- order summary -->
+        <table bgcolor="#EAF0F6" width="100%" role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 60px 60px;">
+            <tbody>
+                <tr>
+                    <td>Subtotal: ${{vendor_subtotal}}</td>
+                </tr>
+                {% for type, values in tax_data.items %}
+                <tr>
+                    <td>{{type}} <small>({{values.rate}}%)</small>: <span>$</span><span>{{values.amount}}</span></td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>TOTAL: ${{vendor_total}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <table role="presentation" bgcolor="#C33332" width="100%">
+            <tr>
+                <td align="center" style="padding: 15px 15px; color: #fff;">
+                    <p>© {% now 'Y' %} FoodOnline Marketplace, All Rights Reserved.</p>
+                    <a href="http://{{domain}}" style="color:#fff;">Visit Website</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

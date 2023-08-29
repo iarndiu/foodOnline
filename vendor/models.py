@@ -2,8 +2,10 @@ from datetime import time, datetime, date
 from django.db import models
 from accounts.models import User, UserProfile
 from accounts.utils import send_notification
+from django.contrib.sites.shortcuts import get_current_site
 
 # Create your models here.
+request_object = ''
 
 
 class Vendor(models.Model):
@@ -39,6 +41,7 @@ class Vendor(models.Model):
         return is_open
 
     def save(self, *args, **kwargs):
+        current_site = get_current_site(request_object)
         if self.pk:
             # update
             orig = Vendor.objects.get(pk=self.pk)
@@ -47,7 +50,8 @@ class Vendor(models.Model):
                 context = {
                     'user': self.user,
                     'is_approved': self.is_approved,
-                    'to_email': self.email,
+                    'to_email': self.user.email,
+                    'domain': current_site,
                 }
                 if self.is_approved:
                     # send notification email

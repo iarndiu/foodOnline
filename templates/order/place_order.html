@@ -68,7 +68,7 @@
                                                 {% for item in cart_items %}
                                                 <tr>
                                                     <td><img src="{{item.fooditem.image.url}}" width="40" alt="food image"></td>
-                                                    <td><b>{{item.fooditem}}</b></td>
+                                                    <td style="line-height: 115%;"><b>{{item.fooditem}}</b></td>
                                                     <td>{{item.quantity}}</td>
                                                     <td>{{item.fooditem.price}}</td>
                                                 </tr>
@@ -87,7 +87,6 @@
                                                 </span>
                                             </li>
                                             {% for type, values in tax_dic.items %}
-
                                             <li style="list-style-type: none;">
                                                 {{type}} <small>({{values.rate}}%)</small>
                                                 <span class="price float-right">
@@ -95,7 +94,6 @@
                                                     <span id="tax_{{values.slug}}">{{values.amount}}</span>
                                                 </span>
                                             </li>
-
                                             {% endfor %}
                                             <li style="list-style-type: none; font-weight: 600;">
                                                 TOTAL

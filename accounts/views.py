@@ -63,11 +63,8 @@ def registerUser(request):
             # send verification email
             mail_subject = 'Please activate your account'
             mail_template = 'accounts/emails/account_verification_email.html'
-            send_verification_email(
-                request, user, mail_subject, mail_template)
-
-            messages.success(
-                request, 'Your account has been registered successfully!')
+            send_verification_email(request, user, mail_subject, mail_template)
+            messages.success(request, 'Your account has been registered successfully!')
             return redirect('registerUser')
         else:
             print(form.errors)
@@ -110,11 +107,9 @@ def registerVendor(request):
             # send verification email
             mail_subject = 'Please activate your account'
             mail_template = 'accounts/emails/account_verification_email.html'
-            send_verification_email(
-                request, user, mail_subject, mail_template)
+            send_verification_email(request, user, mail_subject, mail_template)
 
-            messages.success(
-                request, 'Your account has been registered successfully!')
+            messages.success(request, 'Your account has been registered successfully!')
             return redirect('registerVendor')
         else:
             print(form.errors)
@@ -138,8 +133,7 @@ def activate(request, uidb64, token):
     if user and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        messages.success(
-            request, 'Congratulations! Your account is activated.')
+        messages.success(request, 'Congratulations! Your account is activated.')
         return redirect('myAccount')
     else:
         messages.error(request, 'Invalid activation link.')
@@ -232,8 +226,7 @@ def forgot_password(request):
             # send verification email
             mail_subject = 'Reset your password'
             mail_template = 'accounts/emails/reset_password_email.html'
-            send_verification_email(
-                request, user, mail_subject, mail_template)
+            send_verification_email(request, user, mail_subject, mail_template)
 
             messages.success(
                 request, 'Password reset link has been sent to your email address.')
