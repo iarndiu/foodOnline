@@ -66,35 +66,40 @@ table>tbody>tr>td {
     outline: 2px solid rgb(36, 87, 197);
 }
 
-/* 
+
 @media only screen and (max-width: 480px) {
-    a.get-start-btn{
+    a.get-start-btn {
         display: block;
         margin-top: 15px !important;
         margin-left: 0 !important;
     }
-    .main-search-bar{
+
+    .main-search-bar {
         padding-top: 100px !important;
         padding-bottom: 50px !important;
         background-position: left !important;
     }
-    .user-dashboard{
+
+    .user-dashboard {
         width: 100% !important;
     }
-    .menu-itam-holder .quantity{
+
+    .menu-itam-holder .quantity {
         right: 0 !important;
         margin-top: -30px !important;
     }
-    .table.opening_hours{
+
+    .table.opening_hours {
         width: 100% !important;
     }
-    .table td{
+
+    .table td {
         padding: 0.5rem !important;
     }
-
-
 }
 
-table td, table th{
+
+table td,
+table th {
     line-height: 1rem !important;
-} */
+}
