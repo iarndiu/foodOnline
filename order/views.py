@@ -167,7 +167,7 @@ def payment(request):
                     send_notification(mail_subject, mail_template, context)
 
             # clear the cart if the payment is success
-            # cart_items.delete()
+            cart_items.delete()
 
             # return back to ajax with the status success/fail
             return JsonResponse({

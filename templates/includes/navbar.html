@@ -73,10 +73,10 @@
         }
 
         function showPosition(position) {
-            var lat = '34.0633079'
-            var lng = '-118.4455613'
-            // var lat = position.coords.latitude;
-            // var lng = position.coords.longitude;
+            // var lat = '34.0633079'
+            // var lng = '-118.4455613'
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
 
             // hit AJAX request to googlemaps api endpoint and get the location data using those lat and lng
             var GOOGLE_API_KEY = '{{GOOGLE_API_KEY}}'
